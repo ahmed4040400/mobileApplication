@@ -4,6 +4,7 @@ import 'package:persistent_bottom_nav_bar/persistent_bottom_nav_bar.dart';
 import 'package:tabebak/screens/chatbot_screen.dart';
 import 'package:tabebak/screens/doctor_list_screen.dart';
 import 'package:tabebak/screens/patient_profile_screen.dart';
+import 'package:tabebak/screens/team_screen.dart';  // Added import for TeamScreen
 import '../controllers/auth_controller.dart';
 import '../models/user_model.dart';
 import 'home_screen.dart';
@@ -36,6 +37,7 @@ class _MainContainerScreenState extends State<MainContainerScreen> {
       const DoctorListScreen(),
       const ChatbotScreen(),
       const PatientProfileScreen(),
+      const TeamScreen(),  // Added TeamScreen to the list of screens
     ];
   }
 
@@ -65,6 +67,12 @@ class _MainContainerScreenState extends State<MainContainerScreen> {
         activeColorPrimary: Theme.of(context).primaryColor,
         inactiveColorPrimary: Colors.grey,
       ),
+      PersistentBottomNavBarItem(
+        icon: const Icon(Icons.people),
+        title: "Team",
+        activeColorPrimary: Theme.of(context).primaryColor,
+        inactiveColorPrimary: Colors.grey,
+      ),  // Added new nav item for Team
     ];
   }
 

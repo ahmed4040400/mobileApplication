@@ -2,6 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:faker/faker.dart' as faker;
 import 'package:persistent_bottom_nav_bar/persistent_bottom_nav_bar.dart';
+import 'package:tabebak/screens/article_details_screen.dart';
+import 'package:tabebak/screens/doctor_details_screen.dart';
+import 'package:tabebak/screens/emergency_contacts_screen.dart';
+import 'package:tabebak/screens/learn_more_screen.dart';
+import 'package:tabebak/screens/see_all_articles_screen.dart';
+import 'package:tabebak/screens/team_screen.dart';
 import '../controllers/auth_controller.dart';
 import 'doctor_list_screen.dart';
 import 'pharmacy_screen.dart';
@@ -68,7 +74,7 @@ class HomeScreen extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Welcome message at the top
+                // Welcome message at the top with team button
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -87,6 +93,13 @@ class HomeScreen extends StatelessWidget {
                           style: TextStyle(fontSize: 14, color: Colors.grey),
                         ),
                       ],
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.people),
+                      tooltip: 'Our Team',
+                      onPressed: () {
+                        Get.to(() => const TeamScreen());
+                      },
                     ),
                   ],
                 ),
@@ -116,6 +129,9 @@ class HomeScreen extends StatelessWidget {
                 const SizedBox(height: 16),
                 _buildSectionTitle('Health article'),
                 _buildArticleList(),
+                const SizedBox(height: 16),
+                _buildSectionTitle('Emergency Contacts'),
+                _buildEmergencyContactsBanner(),
               ],
             ),
           ),
@@ -161,13 +177,18 @@ class HomeScreen extends StatelessWidget {
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              children: const [
-                Text(
+              children: [
+                const Text(
                   'Early protection for your family health',
                   style: TextStyle(color: Colors.white, fontSize: 16),
                 ),
-                SizedBox(height: 8),
-                ElevatedButton(onPressed: null, child: Text('Learn more')),
+                const SizedBox(height: 8),
+                ElevatedButton(
+                  onPressed: () {
+                    Get.to(() => LearnMoreScreen());
+                  },
+                  child: const Text('Learn more'),
+                ),
               ],
             ),
           ),
@@ -184,7 +205,18 @@ class HomeScreen extends StatelessWidget {
           title,
           style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
         ),
-        TextButton(onPressed: () {}, child: const Text('See all')),
+        TextButton(
+          onPressed: () {
+            if (title == 'Top Doctor') {
+              Get.to(() => DoctorListScreen());
+            } else if (title == 'Health article') {
+              Get.to(() => SeeAllArticlesScreen());
+            } else if (title == 'Emergency Contacts') {
+              Get.to(() => EmergencyContactsScreen());
+            }
+          },
+          child: const Text('See all'),
+        ),
       ],
     );
   }
@@ -278,59 +310,70 @@ class HomeScreen extends StatelessWidget {
     String distance,
     String imageAsset,
   ) {
-    return Card(
-      margin: const EdgeInsets.only(right: 10),
-      child: Container(
-        width: 160,
-        padding: const EdgeInsets.all(8),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                CircleAvatar(
-                  radius: 25,
-                  backgroundImage: AssetImage(imageAsset),
-                ),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: Text(
-                    name,
-                    style: const TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 13,
-                    ),
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
+    return GestureDetector(
+      onTap: () {
+        Get.to(() => DoctorDetailsScreen(
+              name: name,
+              specialty: specialty,
+              rating: rating,
+              distance: distance,
+              imageAsset: imageAsset,
+            ));
+      },
+      child: Card(
+        margin: const EdgeInsets.only(right: 10),
+        child: Container(
+          width: 160,
+          padding: const EdgeInsets.all(8),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  CircleAvatar(
+                    radius: 25,
+                    backgroundImage: AssetImage(imageAsset),
                   ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 8),
-            Text(
-              specialty,
-              style: TextStyle(fontSize: 12, color: Colors.grey[700]),
-            ),
-            const Spacer(),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Row(
-                  children: [
-                    Icon(Icons.star, color: Colors.amber, size: 14),
-                    Text(
-                      ' ${rating.toStringAsFixed(1)}',
-                      style: const TextStyle(fontSize: 12),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      name,
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 13,
+                      ),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
                     ),
-                  ],
-                ),
-                Text(
-                  distance,
-                  style: TextStyle(fontSize: 12, color: Colors.grey[700]),
-                ),
-              ],
-            ),
-          ],
+                  ),
+                ],
+              ),
+              const SizedBox(height: 8),
+              Text(
+                specialty,
+                style: TextStyle(fontSize: 12, color: Colors.grey[700]),
+              ),
+              const Spacer(),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Row(
+                    children: [
+                      Icon(Icons.star, color: Colors.amber, size: 14),
+                      Text(
+                        ' ${rating.toStringAsFixed(1)}',
+                        style: const TextStyle(fontSize: 12),
+                      ),
+                    ],
+                  ),
+                  Text(
+                    distance,
+                    style: TextStyle(fontSize: 12, color: Colors.grey[700]),
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -409,9 +452,72 @@ class HomeScreen extends StatelessWidget {
             Align(
               alignment: Alignment.centerRight,
               child: TextButton(
-                onPressed: () {},
+                onPressed: () {
+                  Get.to(() => ArticleDetailsScreen(title: title, date: date, readTime: readTime));
+                },
                 child: const Text('Read More'),
               ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildEmergencyContactsBanner() {
+    return GestureDetector(
+      onTap: () {
+        Get.to(() => EmergencyContactsScreen());
+      },
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: Colors.red.shade50,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: Colors.red.shade200),
+        ),
+        child: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: Colors.red.shade100,
+                shape: BoxShape.circle,
+              ),
+              child: Icon(
+                Icons.emergency,
+                color: Colors.red.shade700,
+                size: 30,
+              ),
+            ),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Emergency Services',
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                      color: Colors.red.shade900,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    'Quick access to emergency numbers and contacts',
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: Colors.red.shade800,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Icon(
+              Icons.arrow_forward_ios,
+              color: Colors.red.shade700,
+              size: 20,
             ),
           ],
         ),
